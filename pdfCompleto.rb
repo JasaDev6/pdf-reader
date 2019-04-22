@@ -83,8 +83,6 @@ mostrar = Array.new
 
 	indicador.join(",").gsub(","," ").strip.gsub(/\s+/, " ")
 
-	indicador.join(",").gsub(","," ").strip.gsub(/\s+/, " ")
-
  	p indicador
 
 
@@ -94,15 +92,21 @@ begin
     
     con.exec "DROP TABLE IF EXISTS Actividad"
     con.exec "CREATE TABLE Actividad(Id INTEGER PRIMARY KEY, 
-    	      Nombre VARCHAR(100), FechaIni DATE, FechaFin DATE, Evidencia VARCHAR(100))"
+    	      Nombre VARCHAR(200), FechaIni DATE, FechaFin DATE, Evidencia VARCHAR(200))"
 
     for x in 0..actividades.length-1
     	Nombre = actividades[0]
     	FechaIni = actividades[1]
     	FechaFin = actividades[2]
     	Evidencia = actividades[3]
-    	con.exec "INSERT INTO Actividad VALUES('#{x}', '#{Nombre}', '#{FechaIni}', '#{FechaFin}', '#{Evidencia}')"
+    	#con.exec "INSERT INTO Actividad VALUES('#{x}', '#{Nombre}', '#{FechaIni}', '#{FechaFin}', '#{Evidencia}')"
     end
+
+        con.exec "INSERT INTO Actividad VALUES(0, '#{actividades[0]}', '#{actividades[1]}', '#{actividades[2]}', '#{actividades[3]}')"
+    	con.exec "INSERT INTO Actividad VALUES(1, '#{actividades[4]}', '#{actividades[5]}', '#{actividades[6]}', '#{actividades[7]}')"
+    	#con.exec "INSERT INTO Actividad VALUES(2, '#{actividades[8]}', '#{actividades[9]}', '#{actividades[10]}', '#{actividades[11]}')"
+    	#con.exec "INSERT INTO Actividad VALUES(2, '#{actividades[12]}', '#{actividades[13]}', '#{actividades[14]}', '#{actividades[15]}')"
+
 
     con.exec "GRANT ALL PRIVILEGES ON TABLE Actividad TO antonio"
 
@@ -124,7 +128,7 @@ begin
     
     con.exec "DROP TABLE IF EXISTS Indicador"
     con.exec "CREATE TABLE Indicador(Id INTEGER PRIMARY KEY, 
-    	      Nombre VARCHAR(100))"
+    	      Nombre VARCHAR(200))"
 
     for x in 0..indicador.length-1
     	Nombre = indicador[x]
