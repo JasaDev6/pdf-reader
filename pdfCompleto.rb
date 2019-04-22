@@ -1,18 +1,21 @@
 #!/usr/bin/ruby
 require 'pdf-reader'
+require 'pg'
+
+require 'faker'
+require 'date'
 
 REGEX = /\A\d+\z/
 
-def main()
+mostrar = Array.new
+
 	datos = Array.new
-	reader = PDF::Reader.new('1.pdf')	
+	reader = PDF::Reader.new('2.pdf')	
 	reader.pages.each do |page|
 	  datos.push  page.text
 	end
-	return datos
-end
 
-def procedimiento(datos)
+
 
 	actividades = Array.new
 	arreglo = Array.new
@@ -70,10 +73,9 @@ def procedimiento(datos)
 		end
 	end
 	puts actividades
-end
 
 
-def indicador(datos)
+
 	indicador = Array.new
 	indicador.push datos[0].split(/\n/)[12].slice(110..-1)
 	indicador.push datos[0].split(/\n/)[13].slice(110..-1)
@@ -81,9 +83,63 @@ def indicador(datos)
 
 	indicador.join(",").gsub(","," ").strip.gsub(/\s+/, " ")
 
-	p indicador
+	indicador.join(",").gsub(","," ").strip.gsub(/\s+/, " ")
+
+ 	p indicador
+
+
+begin
+
+    con = PG.connect :dbname => 'sistemapei', :user => 'antonio'
+    
+    con.exec "DROP TABLE IF EXISTS Actividad"
+    con.exec "CREATE TABLE Actividad(Id INTEGER PRIMARY KEY, 
+    	      Nombre VARCHAR(100), FechaIni DATE, FechaFin DATE, Evidencia VARCHAR(100))"
+
+    for x in 0..actividades.length-1
+    	Nombre = actividades[0]
+    	FechaIni = actividades[1]
+    	FechaFin = actividades[2]
+    	Evidencia = actividades[3]
+    	con.exec "INSERT INTO Actividad VALUES('#{x}', '#{Nombre}', '#{FechaIni}', '#{FechaFin}', '#{Evidencia}')"
+    end
+
+    con.exec "GRANT ALL PRIVILEGES ON TABLE Actividad TO antonio"
+
+    
+rescue PG::Error => e
+
+    puts e.message 
+    
+ensure
+
+    con.close if con
+    
 end
 
-datos = main
-procedimiento datos
-indicador datos
+
+begin
+
+    con = PG.connect :dbname => 'sistemapei', :user => 'antonio'
+    
+    con.exec "DROP TABLE IF EXISTS Indicador"
+    con.exec "CREATE TABLE Indicador(Id INTEGER PRIMARY KEY, 
+    	      Nombre VARCHAR(100))"
+
+    for x in 0..indicador.length-1
+    	Nombre = indicador[x]
+    	con.exec "INSERT INTO Indicador VALUES('#{x}', '#{Nombre}')"
+    end
+
+    con.exec "GRANT ALL PRIVILEGES ON TABLE Indicador TO antonio"
+
+    
+rescue PG::Error => e
+
+    puts e.message 
+    
+ensure
+
+    con.close if con
+    
+end
